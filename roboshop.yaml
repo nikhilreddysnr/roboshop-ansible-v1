@@ -20,6 +20,36 @@
     when: action == "create"
     register: ec2_output
   
-  - name: "Print ec2_output"
-    debug:
-      msg: "{{ec2_output}}"
+  # - name: "Print ec2_output"
+  #   debug:
+  #     msg: "{{ec2_output}}"
+  - name: "Create or Update r53 records"
+    amazon.aws.route53:
+      state: present
+      zone: "{{domain}}"
+      record: "{{item.item}}.{{domain}}"
+      type: A
+      ttl: 1
+      value: "{{item.instances[0].private_ip_address}}"
+      overwrite: true
+    loop: "{{ec2_output.results}}"
+    when: action == "create"
+  
+  - name: "Delete R53 Records"
+    amazon.aws.route53:
+      state: absent
+      zone: "{{domain}}"
+      record: "{{item}}.{domain}"
+      ttl: 1
+      type: A
+    loop: "{{instances}}"
+    when: action == "delete"
+
+  - name: "Delete Ec2 instances"
+    amazon.aws.ec2_instance:
+      state: absent
+      name: "roboshop-{{item}}"
+      region: us-east-1
+      wait: false
+    loop: "{{instances}}"
+    when: action == "delete"
