@@ -18,4 +18,4 @@
       region: "us-east-1"
     loop: "{{instances}}"
     when: action == "create"
-    register: ec2-output
+    register: ec2_output
