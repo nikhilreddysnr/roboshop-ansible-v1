@@ -19,7 +19,7 @@
     
   - name: "Start and enable service"
     service:
-      name: mongodb
+      name: mongod
       state: started
       enabled: yes
   
@@ -31,5 +31,5 @@
   
   - name: "Restart Mongod"
     service:
-      name: mongodb
+      name: mongod
       state: restarted
