@@ -1,5 +1,5 @@
 - name: Configure Catalogue Application
-  hosts: Catalogue
+  hosts: catalogue
   become: true
   tasks:
   - name: Disable Nodejs default
