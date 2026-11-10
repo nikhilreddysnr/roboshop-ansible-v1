@@ -10,3 +10,8 @@ user_host: user.nikhil92s.store
 cart_host: cart.nikhil92s.store
 shipping_host: shipping.nikhil92s.store
 payment_host: payment.nikhil92s.store
+mysql_root_password: RoboShop@1
+shipping_db_user: shipping
+shipping_db_password: RoboShop@1
+rabbitmq_user: roboshop
+rabbitmq_password: roboshop123
