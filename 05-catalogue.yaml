@@ -1,0 +1,44 @@
+- name: Configure Catalogue Application
+  hosts: Catalogue
+  become: true
+  tasks:
+  - name: Disable Nodejs default
+    command: dnf module disable nodejs -y
+  
+  - name: Enable Nodejs 24
+    command: dnf module enable nodejs:24 -y
+  
+  - name: Install nodejs
+    dnf:
+      name:
+      - Nodejs
+      state: present
+  
+  - name: Create a user
+    user:
+      name: roboshop
+      system: true
+      create_home: false
+      home: /app
+      comment: roboshop system user
+      shell: /sbin/nologin
+      state : present
+
+  - name: remove directory if exists
+    file:
+      path: /app
+      state: absent
+  
+  - name: remove Catalogue.zip
+    file:
+      path: /tmp/catalogue.zip
+      state: absent
+
+  - name: Create a directory
+    file:
+      path: /app
+      state: present
+
+  
+  
+
