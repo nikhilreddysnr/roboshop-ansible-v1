@@ -37,8 +37,58 @@
   - name: Create a directory
     file:
       path: /app
+      state: directory
+
+  
+  
+  - name: Downloading Application
+    get_url:
+      url: /tmp/catalogue.zip https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/catalogue-v4.zip
+      dest: /tmp/catalogue.zip
+  
+  - name: Unarchive catalogue.zip
+    unarchive:
+      src: /tmp/catalogue.zip
+      dest: /app
+      remote_src: yes
+  
+  - name: NPM Install dependencies
+    community.general.npm:
+      path: /app
+
+  - name: Copy Catalogue service
+    copy: 
+      src: catalogue.service.j2
+      dest: /etc/systemd/system/catalogue.service
+  
+  - name: copy mongo repo
+    copy:
+      src: mongo.repo
+      dest: /etc/yum.repos.d/mongo.repo
+
+  - name: install mongodb client
+    dnf:
+      name: mongodb-mongosh
       state: present
-
   
-  
+  - name: check products loaded or not
+    command: mongosh --host "{{ mongodb_host }}" --quiet --eval 'db.getSiblingDB("catalogue").products.countDocuments()'
+    register: product_count
 
+  - name: print product_count
+    debug:
+      msg: "{{ product_count }}"
+
+  - name: load the products
+    shell: mongosh --host "{{ mongodb_host }}" < /app/db/master-data.js
+    when: product_count.stdout | int == 0
+
+  - name: daemon reload
+    systemd_service:
+      daemon_reload: true
+
+  - name: start and enable catalogue
+    service:
+      name: catalogue
+      state: restarted
+      enabled: yes
