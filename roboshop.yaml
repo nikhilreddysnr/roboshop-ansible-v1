@@ -38,8 +38,8 @@
   - name: create R53 record for frontend
     amazon.aws.route53:
       state: present
-      zone: "{{ domain_name }}"
-      record: "{{ domain_name }}" # daws92s.store points to frontend public IP
+      zone: "{{ domain }}"
+      record: "{{ domain }}" # daws92s.store points to frontend public IP
       type: A
       ttl: 1
       value: "{{ item.instances[0].public_ip_address }}"
@@ -61,8 +61,8 @@
   - name: delete R53 record for frontend
     amazon.aws.route53:
       state: absent
-      zone: "{{ domain_name }}"
-      record: "{{ domain_name }}"
+      zone: "{{ domain }}"
+      record: "{{ domain }}"
       ttl: 1
       type: A
     when: action == "delete" 
